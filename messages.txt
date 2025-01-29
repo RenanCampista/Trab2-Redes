@@ -1,0 +1,10 @@
+Olá!
+Mensagem curta.
+Isso é um teste de comunicação com o servidor.
+Este é um exemplo de mensagem que deve ter prioridade média.
+Aqui temos um texto um pouco mais longo para testar a prioridade do sistema.
+Mensagem de baixa prioridade, pois tem muitas palavras e é bastante extensa para simular uma fila de processamento eficiente no servidor.
+Outra mensagem curta.
+Prioridade alta.
+Teste com mensagem média.
+Um exemplo bem simples.

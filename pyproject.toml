@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "message_queue_server"
+version = "0.1.0"
+description = ""
+authors = ["Renan Campista"]
+readme = "README.md"
+repository = "https://github.com/RenanCampista/Trab2-Redes/"
+packages = [
+    { include = "server", from = "src" },
+    { include = "client", from = "src" },
+    { include = "message_server", from = "src" },
+    { include = "priority_queue", from = "src" },
+]
+
+[tool.poetry.scripts]
+server = "server.server:main"
+client = "client.client:main"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.build.dependencies]
+poetry-pyinstaller-plugin = "^1.1.8"
+
+[tool.pylint.'MAIN']
+init-hook = "import sys; sys.path.append('src/client'); sys.path.append('src/message_server'); sys.path.append('src/priority_queue'); sys.path.append('src/server');"
