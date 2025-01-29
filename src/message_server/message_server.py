@@ -15,6 +15,7 @@ class MessageServer:
         self.running = True
         
     def start(self):
+        """Inicia o servidor de mensagens."""
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         print(f"Servidor iniciado em {self.host}:{self.port}")
@@ -27,6 +28,7 @@ class MessageServer:
             threading.Thread(target=self.handle_client, args=(client_socket,), daemon=True).start()
             
     def handle_client(self, client_socket: socket.socket):
+        """Lida com as mensagens recebidas de um cliente."""
         try:
             while True:
                 message = client_socket.recv(1024).decode()
@@ -35,7 +37,7 @@ class MessageServer:
                 
                 priority = classify_priority()
                 self.priority_queue.add_message(priority, message)
-                print(f"Mensagem recebida: {message} (prioridade: {priority})")
+                print(f"\033[34mMensagem recebida:\033[0m {message} (prioridade: {priority})")
                 client_socket.send("Mensagem recebida e classificada".encode())
         except ConnectionResetError:
             print("Conexão encerrada pelo cliente")
@@ -45,13 +47,15 @@ class MessageServer:
             client_socket.close()
             
     def process_messages(self):
+        """Processa as mensagens da fila de prioridade."""
         while self.running:
             if not self.priority_queue.is_empty():
                 priority, message = self.priority_queue.get_message()
-                print(f"Mensagem processada: {message} (prioridade: {priority})")
+                print(f"\033[32mMensagem processada:\033[0m {message} (prioridade: {priority})")
                 time.sleep(2)
                 
     def stop(self):
+        """Para o servidor de mensagens."""
         self.running = False
         self.server_socket.close()
                        
