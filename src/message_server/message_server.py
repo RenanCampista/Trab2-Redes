@@ -25,19 +25,18 @@ class MessageServer:
         while self.running:
             client_socket, address = self.server_socket.accept()
             print(f"Conexão aceita de {address}")
-            threading.Thread(target=self.handle_client, args=(client_socket,), daemon=True).start()
+            threading.Thread(target=self.handle_client, args=(client_socket, address), daemon=True).start()
             
-    def handle_client(self, client_socket: socket.socket):
+    def handle_client(self, client_socket: socket.socket, addr: str):
         """Lida com as mensagens recebidas de um cliente."""
         try:
             while True:
                 message = client_socket.recv(1024).decode()
                 if not message:
                     break
-                
                 priority = classify_priority()
                 self.priority_queue.add_message(priority, message)
-                print(f"\033[34mMensagem recebida:\033[0m {message} (prioridade: {priority})")
+                print(f"\033[34mRequisição recebida de {addr}:\033[0m {message} (prioridade: {priority})")
                 client_socket.send("Mensagem recebida e classificada".encode())
         except ConnectionResetError:
             print("Conexão encerrada pelo cliente")

@@ -74,5 +74,5 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
     
 def main():
     #client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt")    
-    num_clients = 3
+    num_clients = 5
     multiple_client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt", num_clients)
