@@ -4,7 +4,9 @@ import threading
 from priority_queue.priority_queue import PriorityQueue
 import random
 import time
+import logging
 
+logger = logging.getLogger(__name__)
 
 class MessageServer:
     def __init__(self, host: str, port: int):
@@ -18,13 +20,13 @@ class MessageServer:
         """Inicia o servidor de mensagens."""
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
-        print(f"Servidor iniciado em {self.host}:{self.port}")
+        logger.info(f"Servidor iniciado em {self.host}:{self.port}")
         
         threading.Thread(target=self.process_messages, daemon=True).start()
         
         while self.running:
             client_socket, address = self.server_socket.accept()
-            print(f"Conexão aceita de {address}")
+            logger.info(f"Conexão aceita de {address}")
             threading.Thread(target=self.handle_client, args=(client_socket, address), daemon=True).start()
             
     def handle_client(self, client_socket: socket.socket, addr: str):
@@ -36,12 +38,12 @@ class MessageServer:
                     break
                 priority = classify_priority()
                 self.priority_queue.add_message(priority, message)
-                print(f"\033[34mRequisição recebida de {addr}:\033[0m {message} (prioridade: {priority})")
+                logger.info(f"\033[34mRequisição recebida de {addr}:\033[0m {message} (prioridade: {priority})")
                 client_socket.send("Mensagem recebida e classificada".encode())
         except ConnectionResetError:
-            print("Conexão encerrada pelo cliente")
+            logger.warning(f"Conexão encerrada por {addr}")
         except Exception as e:
-            print(f"Erro ao receber mensagem: {e}")
+            logger.error(f"Erro ao lidar com a requisição de {addr}: {e}")
         finally:
             client_socket.close()
             
@@ -50,7 +52,7 @@ class MessageServer:
         while self.running:
             if not self.priority_queue.is_empty():
                 priority, message = self.priority_queue.get_message()
-                print(f"\033[32mMensagem processada:\033[0m {message} (prioridade: {priority})")
+                logger.info(f"\033[32mMensagem processada:\033[0m {message} (prioridade: {priority})")
                 time.sleep(2)
                 
     def stop(self):

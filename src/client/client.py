@@ -5,18 +5,19 @@ import os
 import threading
 import time
 import random
+import logging
 
 load_dotenv()
 
 SERVER_HOST = os.getenv("SERVER_HOST")
 SERVER_PORT = int(os.getenv("SERVER_PORT"))
-
+LOG_FILE = os.getenv("CLIENT_LOG_FILE")
 
 def client_simulation(host: str, port: int, filename: str):
     """Simula a comunicação de um único cliente com o servidor."""
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((host, port))
-    print("Conexão estabelecida com o servidor")
+    logging.info("Conexão estabelecida com o servidor")
 
     try:
         with open(filename, "r", encoding="utf-8") as file:
@@ -27,9 +28,10 @@ def client_simulation(host: str, port: int, filename: str):
             if msg:
                 client_socket.send(msg.encode())
                 response = client_socket.recv(1024).decode()
-                print(f"Resposta do servidor: {response}")
+                #print(f"Resposta do servidor: {response}")
+                logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
     except FileNotFoundError:
-        print(f"Arquivo {filename} não encontrado")
+        logging.error(f"Arquivo {filename} não encontrado.")
     finally:
         client_socket.close()
 
@@ -45,7 +47,7 @@ def client_thread(host, port, messages):
             if msg:
                 client_socket.send(msg.encode())
                 response = client_socket.recv(1024).decode()
-                print(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
+                logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
             time.sleep(random.uniform(1, 3))
     finally:
         client_socket.close()
@@ -53,7 +55,7 @@ def client_thread(host, port, messages):
 
 def multiple_client_simulation(host: str, port: int, filename: str, num_clients: int):
     """Simula a comunicação de vários clientes com o servidor."""
-    print(f"Simulando comunicação de {num_clients} clientes com o servidor")
+    logging.info(f"Simulando comunicação de {num_clients} clientes com o servidor")
     try:
         with open(filename, "r", encoding="utf-8") as file:
             messages = file.readlines()
@@ -70,10 +72,17 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
         for thread in threads:
             thread.join()
     except FileNotFoundError:
-        print(f"Arquivo {filename} não encontrado.")
+        logging.error(f"Arquivo {filename} não encontrado.")
 
     
 def main():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='[%(asctime)s] %(levelname)s: %(message)s',
+        handlers=[logging.StreamHandler(), logging.FileHandler(LOG_FILE)],
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    
     #client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt")    
     num_clients = random.randint(2, 5)
     multiple_client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt", num_clients)

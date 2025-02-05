@@ -51,6 +51,8 @@ cp .env.example .env
 ```bash
 SERVER_HOST= IP do servidor. Ex: "localhost"
 SERVER_PORT= Porta do servidor. Ex: "8080"
+CLIENT_LOG_FILE= Caminho do arquivo de log do cliente. Ex: "client.log"
+SERVER_LOG_FILE= Caminho do arquivo de log do servidor. Ex: "server.log"
 ```
 
 ## Execução:
@@ -68,16 +70,14 @@ O cliente, por sua vez, irá ler o conteúdo do arquivo [messages.txt](messages.
 
 
 ## Funcionalidades implementadas:
-- [x] Implementação do servidor de mensagens.
-- [x] Implementação do cliente de mensagens.
+- [x] Implementação do servidor multithread de mensagens.
+- [x] Implementação do cliente de mensagens para simulação.
 - [x] Implementação da fila de prioridade.
-- [x] Implementação do servidor multithread.
 - [x] Implementação do sistema de leitura de mensagens.
-
+- [x] Implementar um sistema de logs para registrar as mensagens recebidas e enviadas.
 
 ## Possíveis Melhorias Futuras:
 - [ ] Implementar um sistema de autenticação para o servidor.
 - [ ] Implementar um sistema de criptografia para as mensagens.
-- [ ] Implementar um sistema de logs para registrar as mensagens recebidas e enviadas.
 - [ ] Implementar um sistema de notificação para informar o cliente sobre o status das mensagens.
 - [ ] Implementar um sistema de armazenamento para salvar as mensagens recebidas em um banco de dados.
