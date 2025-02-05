@@ -20,8 +20,5 @@ client = "client.client:main"
 python = ">=3.10,<3.13"
 python-dotenv = "^1.0.1"
 
-[tool.poetry.group.build.dependencies]
-poetry-pyinstaller-plugin = "^1.1.8"
-
 [tool.pylint.'MAIN']
 init-hook = "import sys; sys.path.append('src/client'); sys.path.append('src/message_server'); sys.path.append('src/priority_queue'); sys.path.append('src/server');"

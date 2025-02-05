@@ -53,6 +53,7 @@ def client_thread(host, port, messages):
 
 def multiple_client_simulation(host: str, port: int, filename: str, num_clients: int):
     """Simula a comunicação de vários clientes com o servidor."""
+    print(f"Simulando comunicação de {num_clients} clientes com o servidor")
     try:
         with open(filename, "r", encoding="utf-8") as file:
             messages = file.readlines()
@@ -74,5 +75,5 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
     
 def main():
     #client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt")    
-    num_clients = 5
+    num_clients = random.randint(2, 5)
     multiple_client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt", num_clients)
