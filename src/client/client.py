@@ -15,42 +15,59 @@ LOG_FILE = os.getenv("CLIENT_LOG_FILE")
 
 def client_simulation(host: str, port: int, filename: str):
     """Simula a comunicação de um único cliente com o servidor."""
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((host, port))
-    logging.info("Conexão estabelecida com o servidor")
-
     try:
-        with open(filename, "r", encoding="utf-8") as file:
-            messages = file.readlines()
-        
-        for msg in messages:
-            msg = msg.strip()
-            if msg:
-                client_socket.send(msg.encode())
-                response = client_socket.recv(1024).decode()
-                #print(f"Resposta do servidor: {response}")
-                logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
-    except FileNotFoundError:
-        logging.error(f"Arquivo {filename} não encontrado.")
-    finally:
-        client_socket.close()
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host, port))
+        logging.info("Conexão estabelecida com o servidor")
+
+        try:
+            with open(filename, "r", encoding="utf-8") as file:
+                messages = file.readlines()
+            
+            for msg in messages:
+                msg = msg.strip()
+                if msg:
+                    client_socket.send(msg.encode())
+                    response = client_socket.recv(1024).decode()
+                    logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
+        except FileNotFoundError:
+            logging.error(f"Arquivo {filename} não encontrado.")
+        finally:
+            client_socket.close()
+    except ConnectionRefusedError:
+        logging.error("Conexão recusada pelo servidor.")
+    except socket.timeout:
+        logging.error("Tempo de conexão esgotado.")
+    except OSError as e:
+        logging.error(f"Erro de socket: {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado: {e}")
 
 
 def client_thread(host, port, messages):
     """Envia mensagens para o servidor e imprime a resposta."""
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((host, port))
-
     try:
-        for msg in messages:
-            msg = msg.strip()
-            if msg:
-                client_socket.send(msg.encode())
-                response = client_socket.recv(1024).decode()
-                logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
-            time.sleep(random.uniform(1, 3))
-    finally:
-        client_socket.close()
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket.connect((host, port))
+
+        try:
+            for msg in messages:
+                msg = msg.strip()
+                if msg:
+                    client_socket.send(msg.encode())
+                    response = client_socket.recv(1024).decode()
+                    logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
+                time.sleep(random.uniform(1, 3))
+        finally:
+            client_socket.close()
+    except ConnectionRefusedError:
+        logging.error("Conexão recusada pelo servidor.")
+    except socket.timeout:
+        logging.error("Tempo de conexão esgotado.")
+    except OSError as e:
+        logging.error(f"Erro de socket: {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado: {e}")
 
 
 def multiple_client_simulation(host: str, port: int, filename: str, num_clients: int):
@@ -73,6 +90,14 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
             thread.join()
     except FileNotFoundError:
         logging.error(f"Arquivo {filename} não encontrado.")
+    except ConnectionRefusedError:
+        logging.error("Conexão recusada pelo servidor.")
+    except socket.timeout:
+        logging.error("Tempo de conexão esgotado.")
+    except OSError as e:
+        logging.error(f"Erro de socket: {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado: {e}")
 
     
 def main():
