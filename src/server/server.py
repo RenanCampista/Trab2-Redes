@@ -24,7 +24,7 @@ def main():
     logger = logging.getLogger(__name__)
     
     server = MessageServer(SERVER_HOST, SERVER_PORT)
-    threading.Thread(target=server.start, daemon=True).start()
+    threading.Thread(target=server.start, daemon=True).start() # Inicia o servidor em uma thread
     
     input("Pressione Enter para encerrar o servidor...\n")
     server.stop()

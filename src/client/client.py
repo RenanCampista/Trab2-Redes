@@ -13,51 +13,21 @@ SERVER_HOST = os.getenv("SERVER_HOST")
 SERVER_PORT = int(os.getenv("SERVER_PORT"))
 LOG_FILE = os.getenv("CLIENT_LOG_FILE")
 
-def client_simulation(host: str, port: int, filename: str):
-    """Simula a comunicação de um único cliente com o servidor."""
-    try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client_socket.connect((host, port))
-        logging.info("Conexão estabelecida com o servidor")
-
-        try:
-            with open(filename, "r", encoding="utf-8") as file:
-                messages = file.readlines()
-            
-            for msg in messages:
-                msg = msg.strip()
-                if msg:
-                    client_socket.send(msg.encode())
-                    response = client_socket.recv(1024).decode()
-                    logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
-        except FileNotFoundError:
-            logging.error(f"Arquivo {filename} não encontrado.")
-        finally:
-            client_socket.close()
-    except ConnectionRefusedError:
-        logging.error("Conexão recusada pelo servidor.")
-    except socket.timeout:
-        logging.error("Tempo de conexão esgotado.")
-    except OSError as e:
-        logging.error(f"Erro de socket: {e}")
-    except Exception as e:
-        logging.error(f"Erro inesperado: {e}")
-
 
 def client_thread(host, port, messages):
     """Envia mensagens para o servidor e imprime a resposta."""
     try:
-        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Cria um socket cliente para comunicação
         client_socket.connect((host, port))
 
         try:
             for msg in messages:
                 msg = msg.strip()
                 if msg:
-                    client_socket.send(msg.encode())
-                    response = client_socket.recv(1024).decode()
+                    client_socket.send(msg.encode()) # Envia a mensagem ao servidor
+                    response = client_socket.recv(1024).decode() # Recebe a resposta do servidor
                     logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
-                time.sleep(random.uniform(1, 3))
+                time.sleep(random.uniform(1, 3)) # Simula tempo de envio
         finally:
             client_socket.close()
     except ConnectionRefusedError:
@@ -77,17 +47,17 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
         with open(filename, "r", encoding="utf-8") as file:
             messages = file.readlines()
         
-        chunk_size = max(1, len(messages) // num_clients)
+        chunk_size = max(1, len(messages) // num_clients) # Divide as mensagens entre os clientes igualmente
         threads = []
 
         for i in range(num_clients):
-            chunk = messages[i * chunk_size:(i + 1) * chunk_size]
-            thread = threading.Thread(target=client_thread, args=(host, port, chunk))
+            chunk = messages[i * chunk_size:(i + 1) * chunk_size] # Obtém um pedaço das mensagens para o cliente atual
+            thread = threading.Thread(target=client_thread, args=(host, port, chunk)) # Cria uma thread para o cliente atual
             threads.append(thread)
             thread.start()
 
         for thread in threads:
-            thread.join()
+            thread.join() # Aguarda a finalização de todas as threads
     except FileNotFoundError:
         logging.error(f"Arquivo {filename} não encontrado.")
     except ConnectionRefusedError:
@@ -108,6 +78,5 @@ def main():
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
-    #client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt")    
-    num_clients = random.randint(2, 5)
+    num_clients = random.randint(1, 5) # Número aleatório de clientes
     multiple_client_simulation(SERVER_HOST, SERVER_PORT, "messages.txt", num_clients)

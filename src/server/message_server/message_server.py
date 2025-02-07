@@ -15,15 +15,16 @@ class MessageServer:
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.priority_queue = PriorityQueue()
-        self.running = True
+        self.running = True # Variável de controle para parar o servidor
         
     def start(self):
         """Inicia o servidor de mensagens."""
         try:
-            self.server_socket.bind((self.host, self.port))
-            self.server_socket.listen(5)
+            self.server_socket.bind((self.host, self.port)) # Associa o socket a um endereço e porta
+            self.server_socket.listen(5) # Define o número máximo de conexões pendentes 
             logger.info(f"Servidor iniciado em {self.host}:{self.port}")
             
+            # Inicia a thread responsável por processar mensagens da fila de prioridade
             threading.Thread(target=self.process_messages, daemon=True).start()
             
             while self.running:
@@ -52,7 +53,7 @@ class MessageServer:
                 priority = classify_priority()
                 self.priority_queue.add_message(priority, message)
                 logger.info(f"\033[34mRequisição recebida de {addr}:\033[0m {message} (prioridade: {priority})")
-                client_socket.send("Mensagem recebida e classificada".encode())
+                client_socket.send(f"Mensagem recebida e classificada: {priority}".encode()) # Envia uma resposta ao cliente
         except ConnectionResetError:
             logger.warning(f"Conexão encerrada por {addr}")
         except socket.timeout:
@@ -70,7 +71,7 @@ class MessageServer:
             if not self.priority_queue.is_empty():
                 priority, message = self.priority_queue.get_message()
                 logger.info(f"\033[32mMensagem processada:\033[0m {message} (prioridade: {priority})")
-                time.sleep(2)
+                time.sleep(2) # Simula tempo de processamento 
                 
     def stop(self):
         """Para o servidor de mensagens."""
