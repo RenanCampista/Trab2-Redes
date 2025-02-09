@@ -75,9 +75,10 @@ O cliente, por sua vez, irá ler o conteúdo do arquivo [messages.txt](messages.
 - [x] Implementação da fila de prioridade.
 - [x] Implementação do sistema de leitura de mensagens.
 - [x] Implementar um sistema de logs para registrar as mensagens recebidas e enviadas.
+- [x] Cliente é informado quando a mensagem é processada pelo servidor.
 
 ## Possíveis Melhorias Futuras:
 - [ ] Implementar um sistema de autenticação para o servidor.
 - [ ] Implementar um sistema de criptografia para as mensagens.
-- [ ] Implementar um sistema de notificação para informar o cliente sobre o status das mensagens.
+- [ ] Implementar um sistema de notificação para informar o cliente sobre o status das mensagens. Atualmente, o cliente é informado apenas quando a mensagem é processada pelo servidor.
 - [ ] Implementar um sistema de armazenamento para salvar as mensagens recebidas em um banco de dados.

@@ -27,15 +27,28 @@ def client_thread(host, port, messages):
                     client_socket.send(msg.encode()) # Envia a mensagem ao servidor
                     response = client_socket.recv(1024).decode() # Recebe a resposta do servidor
                     logging.info(f"Cliente enviou: {msg} | Servidor respondeu: {response}")
-                time.sleep(random.uniform(1, 3)) # Simula tempo de envio
+                time.sleep(1) # Aguarda 1 segundo entre as mensagens
+            
+            # Continua recebendo notificações do servidor
+            while True:
+                try:
+                    notification = client_socket.recv(1024).decode()
+                    if not notification:
+                        break
+                    logging.info(f"Notificação do servidor: {notification}")
+                except ConnectionResetError:
+                    logging.warning("Conexão encerrada pelo servidor.")
+                    break
+                except OSError as e:
+                    logging.error(f"Erro de socket: {e}")
+                    break
         finally:
-            client_socket.close()
+            if client_socket:
+                client_socket.close()
     except ConnectionRefusedError:
         logging.error("Conexão recusada pelo servidor.")
     except socket.timeout:
         logging.error("Tempo de conexão esgotado.")
-    except OSError as e:
-        logging.error(f"Erro de socket: {e}")
     except Exception as e:
         logging.error(f"Erro inesperado: {e}")
 
@@ -62,6 +75,8 @@ def multiple_client_simulation(host: str, port: int, filename: str, num_clients:
         logging.error(f"Arquivo {filename} não encontrado.")
     except ConnectionRefusedError:
         logging.error("Conexão recusada pelo servidor.")
+    except KeyboardInterrupt:
+        logging.info("Simulação interrompida pelo usuário.")
     except socket.timeout:
         logging.error("Tempo de conexão esgotado.")
     except OSError as e:

@@ -13,7 +13,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-server = "server.server:main"
+server = "server:main"
 client = "client.client:main"
 
 [tool.poetry.dependencies]
